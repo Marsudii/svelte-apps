@@ -3,7 +3,7 @@ version: "3.2"
 services:
   svelte:
     container_name: svelte
-    image: svelte-app:latest
+    image: svelte-apps:latest
     ports:
       - "3000:3000"
     environment:

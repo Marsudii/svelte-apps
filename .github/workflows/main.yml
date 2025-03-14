@@ -19,4 +19,41 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.IP }} >> ~/.ssh/known_hosts
 
-    
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.HOST }}@${{ secrets.IP }} << 'EOF'
+          echo "✅ Connected to VM"
+
+          # Pastikan folder project ada
+          if [ ! -d "/home/svelte-apps" ]; then
+            echo "❌ Error: Folder /home/fiber-apps tidak ditemukan"
+            exit 1
+          fi
+
+          cd /home/svelte-apps || exit 1
+          echo "📦 Pulling latest changes from Git..."
+          git reset --hard
+          git pull origin main
+
+          echo "🛑 Stopping old Docker containers..."
+          docker-compose down
+
+          echo " BUILD DOCKER IMAGE TAG LATEST..."
+          docker build -t svelte-apps:latest .
+
+
+          echo "🚀 Building and starting new containers..."
+          docker-compose up -d 
+          echo "✅ Deployment berhasil!"
+          exit
+          EOF
+
+      - name: Cleanup Unused Docker Images
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.HOST }}@${{ secrets.IP }} << 'EOF'
+          echo "🧹 Cleaning up unused Docker images..."
+          docker image prune -a -f
+          echo "✅ Cleanup selesai!"
+          echo "CLOSE CONNCETION SSH..."
+          exit
+          EOF
