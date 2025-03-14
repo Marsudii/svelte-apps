@@ -1,0 +1,22 @@
+name: Auto Deploy to VM
+
+on:
+  push:
+    branches:
+      - main # Auto deploy saat push ke main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.IP }} >> ~/.ssh/known_hosts
+
+    
