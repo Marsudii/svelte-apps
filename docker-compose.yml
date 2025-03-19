@@ -11,3 +11,8 @@ services:
     restart: always
     networks:
       - web-app
+
+networks:
+  web-app:
+    external: true
+  
