@@ -19,7 +19,7 @@
 	fetchData();
 </script>
 
-<h1>API Data from Backend</h1>
+<h1>API Data from Backend New</h1>
 
 {#if error}
 	<p style="color: red;">Error: {error}</p>
